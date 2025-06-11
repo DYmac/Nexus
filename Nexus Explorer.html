@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Explorer - Nexus 挖矿游戏</title>
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --dark: #1a1c2c;
+            --light: #f0f0f0;
+            --success: #41b883;
+            --warning: #ffcc00;
+            --danger: #ff5252;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark), #0f1120);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8a8fb3;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard {
+            background: rgba(26, 28, 44, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(79, 85, 124, 0.3);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-title i {
+            color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(35, 38, 58, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(35, 38, 58, 0.9);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: #8a8fb3;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .stat-unit {
+            font-size: 0.9rem;
+            color: #8a8fb3;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .action-btn i {
+            font-size: 1.8rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .upgrades {
+            background: rgba(35, 38, 58, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .upgrades-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .upgrade-info {
+            flex: 1;
+        }
+
+        .upgrade-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-desc {
+            font-size: 0.85rem;
+            color: #8a8fb3;
+        }
+
+        .upgrade-cost {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .upgrade-buy {
+            background: var(--success);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 8px 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upgrade-buy:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .network-view {
+            background: rgba(26, 28, 44, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(79, 85, 124, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .network-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .network-canvas {
+            flex: 1;
+            background: rgba(20, 22, 36, 0.6);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .node {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(78, 84, 200, 0.5);
+            transition: all 0.5s ease;
+        }
+
+        .player-node {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 60px;
+            height: 60px;
+            z-index: 10;
+            box-shadow: 0 0 25px var(--primary);
+        }
+
+        .other-node {
+            background: rgba(143, 148, 251, 0.3);
+            border: 2px solid var(--secondary);
+        }
+
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: rgba(143, 148, 251, 0.3);
+            transform-origin: 0 0;
+        }
+
+        .events-log {
+            background: rgba(35, 38, 58, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .event {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .event.success {
+            color: var(--success);
+        }
+
+        .event.warning {
+            color: var(--warning);
+        }
+
+        .event.danger {
+            color: var(--danger);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            background: rgba(35, 38, 58, 0.7);
+            border: 1px solid rgba(79, 85, 124, 0.3);
+            border-radius: 10px;
+            color: white;
+            padding: 12px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(78, 84, 200, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0 20px;
+            color: #8a8fb3;
+            font-size: 0.9rem;
+        }
+
+        .github-link {
+            color: var(--secondary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .github-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 900px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">DYmac</div>
+                <h1>Nexus Explorer</h1>
+            </div>
+            <p class="subtitle">建立你的区块链节点，管理算力资源，参与挖矿与交易，成为去中心化网络的领导者！</p>
+        </header>
+
+        <div class="game-container">
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h2 class="dashboard-title">
+                        <i>📊</i> 节点控制面板
+                    </h2>
+                    <div class="level">等级: <span id="level">1</span></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">NEXUS代币 (NEX)</div>
+                            <div class="stat-icon">💰</div>
+                        </div>
+                        <div class="stat-value" id="nexus-tokens">100.00</div>
+                        <div class="stat-unit">NEX</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">算力</div>
+                            <div class="stat-icon">⚡</div>
+                        </div>
+                        <div class="stat-value" id="hashrate">5.2</div>
+                        <div class="stat-unit">GH/s</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">能源消耗</div>
+                            <div class="stat-icon">🔋</div>
+                        </div>
+                        <div class="stat-value" id="energy-usage">120</div>
+                        <div class="stat-unit">KW/h</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">节点可靠性</div>
+                            <div class="stat-icon">🛡️</div>
+                        </div>
+                        <div class="stat-value" id="reliability">87%</div>
+                        <div class="stat-progress">
+                            <div class="progress-bar" style="width: 87%; background: var(--success); height: 6px; border-radius: 3px; margin-top: 8px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>节点操作</h3>
+                <div class="actions-grid">
+                    <button class="action-btn" id="mine-btn">
+                        <i>⛏️</i>
+                        <span>挖矿</span>
+                    </button>
+                    <button class="action-btn" id="validate-btn">
+                        <i>✅</i>
+                        <span>验证交易</span>
+                    </button>
+                    <button class="action-btn" id="upgrade-btn">
+                        <i>⬆️</i>
+                        <span>升级节点</span>
+                    </button>
+                    <button class="action-btn" id="stake-btn">
+                        <i>🔒</i>
+                        <span>质押代币</span>
+                    </button>
+                    <button class="action-btn" id="defend-btn">
+                        <i>🛡️</i>
+                        <span>防御攻击</span>
+                    </button>
+                    <button class="action-btn" id="connect-btn">
+                        <i>🌐</i>
+                        <span>连接节点</span>
+                    </button>
+                </div>
+
+                <div class="upgrades">
+                    <div class="upgrades-header">
+                        <h3>节点升级</h3>
+                        <div class="balance">余额: <span id="balance">100</span> NEX</div>
+                    </div>
+
+                    <div class="upgrade-item">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">GPU 加速器</div>
+                            <div class="upgrade-desc">+5 GH/s 算力</div>
+                        </div>
+                        <div class="upgrade-cost">💎 50 NEX</div>
+                        <button class="upgrade-buy" id="upgrade-gpu">购买</button>
+                    </div>
+
+                    <div class="upgrade-item">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">冷却系统</div>
+                            <div class="upgrade-desc">-10% 能源消耗</div>
+                        </div>
+                        <div class="upgrade-cost">💎 75 NEX</div>
+                        <button class="upgrade-buy" id="upgrade-cooling">购买</button>
+                    </div>
+
+                    <div class="upgrade-item">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">安全协议</div>
+                            <div class="upgrade-desc">+15% 节点可靠性</div>
+                        </div>
+                        <div class="upgrade-cost">💎 100 NEX</div>
+                        <button class="upgrade-buy" id="upgrade-security">购买</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="network-view">
+                <div class="network-header">
+                    <h2 class="dashboard-title">
+                        <i>🌐</i> 区块链网络
+                    </h2>
+                    <div class="nodes-count">节点: <span id="nodes-count">24</span></div>
+                </div>
+
+                <div class="network-canvas" id="network-canvas">
+                    <!-- 节点将通过JS动态生成 -->
+                </div>
+
+                <div class="events-log" id="events-log">
+                    <div class="event success">[系统] 欢迎来到Nexus Explorer! 开始建立你的区块链节点。</div>
+                    <div class="event">[信息] 节点已启动，正在同步区块链数据...</div>
+                    <div class="event">[信息] 发现12个可连接节点</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button class="control-btn" id="save-btn">保存游戏</button>
+            <button class="control-btn" id="reset-btn">重置游戏</button>
+            <button class="control-btn" id="help-btn">游戏指南</button>
+        </div>
+
+        <footer>
+            <p>Nexus Explorer - 区块链模拟游戏 | 开源项目</p>
+            <a href="https://github.com/DYmac/Nexus" class="github-link" target="_blank">
+                <i>📁</i> GitHub仓库
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        // 游戏状态
+        const gameState = {
+            nexusTokens: 100,
+            hashrate: 5.2,
+            energyUsage: 120,
+            reliability: 87,
+            level: 1,
+            gpuUpgrade: 0,
+            coolingUpgrade: 0,
+            securityUpgrade: 0,
+            stakedTokens: 0
+        };
+
+        // DOM元素
+        const elements = {
+            nexusTokens: document.getElementById('nexus-tokens'),
+            hashrate: document.getElementById('hashrate'),
+            energyUsage: document.getElementById('energy-usage'),
+            reliability: document.getElementById('reliability'),
+            level: document.getElementById('level'),
+            balance: document.getElementById('balance'),
+            nodesCount: document.getElementById('nodes-count'),
+            eventsLog: document.getElementById('events-log'),
+            networkCanvas: document.getElementById('network-canvas'),
+
+            // 按钮
+            mineBtn: document.getElementById('mine-btn'),
+            validateBtn: document.getElementById('validate-btn'),
+            upgradeBtn: document.getElementById('upgrade-btn'),
+            stakeBtn: document.getElementById('stake-btn'),
+            defendBtn: document.getElementById('defend-btn'),
+            connectBtn: document.getElementById('connect-btn'),
+
+            // 升级按钮
+            upgradeGpu: document.getElementById('upgrade-gpu'),
+            upgradeCooling: document.getElementById('upgrade-cooling'),
+            upgradeSecurity: document.getElementById('upgrade-security')
+        };
+
+        // 初始化游戏
+        function initGame() {
+            updateUI();
+            createNetworkNodes();
+            setupEventListeners();
+
+            // 游戏循环
+            setInterval(gameLoop, 2000);
+        }
+
+        // 更新UI
+        function updateUI() {
+            elements.nexusTokens.textContent = gameState.nexusTokens.toFixed(2);
+            elements.hashrate.textContent = gameState.hashrate.toFixed(1);
+            elements.energyUsage.textContent = gameState.energyUsage;
+            elements.reliability.textContent = `${gameState.reliability}%`;
+            elements.level.textContent = gameState.level;
+            elements.balance.textContent = gameState.nexusTokens.toFixed(0);
+
+            // 更新进度条
+            document.querySelector('.progress-bar').style.width = `${gameState.reliability}%`;
+            document.querySelector('.progress-bar').style.background =
+                gameState.reliability > 70 ? 'var(--success)' :
+                gameState.reliability > 40 ? 'var(--warning)' : 'var(--danger)';
+        }
+
+        // 创建网络节点
+        function createNetworkNodes() {
+            elements.networkCanvas.innerHTML = '';
+
+            // 创建玩家节点
+            const playerNode = document.createElement('div');
+            playerNode.className = 'node player-node';
+            playerNode.textContent = 'YOU';
+            playerNode.style.left = '50%';
+            playerNode.style.top = '50%';
+            elements.networkCanvas.appendChild(playerNode);
+
+            // 创建其他节点
+            const nodeCount = 12 + Math.floor(gameState.level * 1.5);
+            elements.nodesCount.textContent = nodeCount;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'node other-node';
+                node.textContent = i + 1;
+
+                // 随机位置 (避免太靠近中心)
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 100 + Math.random() * 150;
+                const centerX = elements.networkCanvas.offsetWidth / 2;
+                const centerY = elements.networkCanvas.offsetHeight / 2;
+
+                node.style.left = `${centerX + Math.cos(angle) * distance}px`;
+                node.style.top = `${centerY + Math.sin(angle) * distance}px`;
+
+                elements.networkCanvas.appendChild(node);
+
+                // 创建连接线
+                if (Math.random() > 0.3) {
+                    const connection = document.createElement('div');
+                    connection.className = 'connection';
+
+                    const startX = centerX;
+                    const startY = centerY;
+                    const endX = parseFloat(node.style.left);
+                    const endY = parseFloat(node.style.top);
+
+                    const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                    const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+                    connection.style.width = `${length}px`;
+                    connection.style.transform = `rotate(${angle}deg)`;
+                    connection.style.left = `${startX}px`;
+                    connection.style.top = `${startY}px`;
+
+                    elements.networkCanvas.appendChild(connection);
+                }
+            }
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 操作按钮
+            elements.mineBtn.addEventListener('click', mine);
+            elements.validateBtn.addEventListener('click', validateTransactions);
+            elements.stakeBtn.addEventListener('click', stakeTokens);
+            elements.defendBtn.addEventListener('click', defendNode);
+            elements.connectBtn.addEventListener('click', connectToNetwork);
+
+            // 升级按钮
+            elements.upgradeGpu.addEventListener('click', () => buyUpgrade('gpu'));
+            elements.upgradeCooling.addEventListener('click', () => buyUpgrade('cooling'));
+            elements.upgradeSecurity.addEventListener('click', () => buyUpgrade('security'));
+
+            // 控制按钮
+            document.getElementById('save-btn').addEventListener('click', saveGame);
+            document.getElementById('reset-btn').addEventListener('click', resetGame);
+            document.getElementById('help-btn').addEventListener('click', showHelp);
+        }
+
+        // 挖矿操作
+        function mine() {
+            const reward = (Math.random() * 0.5 + 0.5) * (gameState.hashrate / 10);
+            gameState.nexusTokens += reward;
+
+            // 消耗能源
+            gameState.energyUsage += 1;
+
+            addEvent(`⛏️ 挖矿成功! 获得 ${reward.toFixed(2)} NEX`, 'success');
+            updateUI();
+        }
+
+        // 验证交易
+        function validateTransactions() {
+            const reward = (Math.random() * 0.2 + 0.1) * (gameState.reliability / 20);
+            gameState.nexusTokens += reward;
+
+            addEvent(`✅ 已验证交易! 获得 ${reward.toFixed(2)} NEX`, 'success');
+            updateUI();
+        }
+
+        // 质押代币
+        function stakeTokens() {
+            if (gameState.nexusTokens < 10) {
+                addEvent('❌ 质押失败: 代币不足', 'danger');
+                return;
+            }
+
+            const amount = Math.min(10, gameState.nexusTokens);
+            gameState.nexusTokens -= amount;
+            gameState.stakedTokens += amount;
+            gameState.reliability = Math.min(100, gameState.reliability + 2);
+
+            addEvent(`🔒 质押了 ${amount.toFixed(2)} NEX! 可靠性 +2%`, 'success');
+            updateUI();
+        }
+
+        // 防御攻击
+        function defendNode() {
+            const success = Math.random() < (gameState.reliability / 100);
+
+            if (success) {
+                const reward = Math.random() * 5 + 5;
+                gameState.nexusTokens += reward;
+                gameState.reliability = Math.min(100, gameState.reliability + 1);
+
+                addEvent(`🛡️ 成功抵御黑客攻击! 获得 ${reward.toFixed(2)} NEX`, 'success');
+            } else {
+                const penalty = Math.random() * 10 + 5;
+                gameState.nexusTokens = Math.max(0, gameState.nexusTokens - penalty);
+                gameState.reliability = Math.max(0, gameState.reliability - 5);
+
+                addEvent(`💥 黑客攻击成功! 损失 ${penalty.toFixed(2)} NEX`, 'danger');
+            }
+
+            updateUI();
+        }
+
+        // 连接到网络
+        function connectToNetwork() {
+            const reward = (Math.random() * 0.8 + 0.2) * (gameState.level / 2);
+            gameState.nexusTokens += reward;
+            gameState.level += 0.1;
+
+            addEvent(`🌐 连接到新节点! 获得 ${reward.toFixed(2)} NEX`, 'success');
+            updateUI();
+            createNetworkNodes();
+        }
+
+        // 购买升级
+        function buyUpgrade(type) {
+            let cost, effect;
+
+            switch(type) {
+                case 'gpu':
+                    cost = 50;
+                    effect = '算力 +5 GH/s';
+                    break;
+                case 'cooling':
+                    cost = 75;
+                    effect = '能源消耗 -10%';
+                    break;
+                case 'security':
+                    cost = 100;
+                    effect = '可靠性 +15%';
+                    break;
+            }
+
+            if (gameState.nexusTokens < cost) {
+                addEvent(`❌ 升级失败: 需要 ${cost} NEX`, 'danger');
+                return;
+            }
+
+            gameState.nexusTokens -= cost;
+
+            switch(type) {
+                case 'gpu':
+                    gameState.hashrate += 5;
+                    gameState.gpuUpgrade++;
+                    break;
+                case 'cooling':
+                    gameState.energyUsage = Math.max(50, gameState.energyUsage * 0.9);
+                    gameState.coolingUpgrade++;
+                    break;
+                case 'security':
+                    gameState.reliability = Math.min(100, gameState.reliability + 15);
+                    gameState.securityUpgrade++;
+                    break;
+            }
+
+            gameState.level += 0.5;
+            addEvent(`⬆️ 升级成功! ${effect}`, 'success');
+            updateUI();
+        }
+
+        // 添加事件日志
+        function addEvent(message, type = '') {
+            const eventElement = document.createElement('div');
+            eventElement.className = `event ${type}`;
+            eventElement.textContent = `[${getFormattedTime()}] ${message}`;
+
+            elements.eventsLog.prepend(eventElement);
+
+            // 限制日志数量
+            if (elements.eventsLog.children.length > 20) {
+                elements.eventsLog.removeChild(elements.eventsLog.lastChild);
+            }
+        }
+
+        // 获取格式化时间
+        function getFormattedTime() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        }
+
+        // 游戏循环
+        function gameLoop() {
+            // 被动收入 (质押奖励)
+            if (gameState.stakedTokens > 0) {
+                const reward = gameState.stakedTokens * 0.005;
+                gameState.nexusTokens += reward;
+                addEvent(`💰 质押奖励: +${reward.toFixed(4)} NEX`, 'success');
+            }
+
+            // 随机事件
+            if (Math.random() < 0.2) {
+                const events = [
+                    {
+                        message: "📈 加密货币市场上涨! 所有奖励翻倍 (持续30秒)",
+                        effect: () => {
+                            // 临时效果
+                            setTimeout(() => {
+                                addEvent("📉 市场恢复正常水平", "warning");
+                            }, 30000);
+                        }
+                    },
+                    {
+                        message: "⚠️ 网络拥堵! 交易费用增加",
+                        effect: () => gameState.energyUsage += 5
+                    },
+                    {
+                        message: "🎉 社区空投! 获得免费代币",
+                        effect: () => gameState.nexusTokens += Math.random() * 20 + 10
+                    }
+                ];
+
+                const event = events[Math.floor(Math.random() * events.length)];
+                addEvent(event.message, 'warning');
+                if (event.effect) event.effect();
+            }
+
+            // 随机攻击
+            if (Math.random() < 0.15) {
+                addEvent("🚨 检测到黑客攻击尝试!", "danger");
+            }
+
+            updateUI();
+        }
+
+        // 保存游戏
+        function saveGame() {
+            localStorage.setItem('nexusExplorerSave', JSON.stringify(gameState));
+            addEvent("💾 游戏已保存!", "success");
+        }
+
+        // 重置游戏
+        function resetGame() {
+            if (confirm('确定要重置游戏吗？所有进度将丢失。')) {
+                localStorage.removeItem('nexusExplorerSave');
+                Object.assign(gameState, {
+                    nexusTokens: 100,
+                    hashrate: 5.2,
+                    energyUsage: 120,
+                    reliability: 87,
+                    level: 1,
+                    gpuUpgrade: 0,
+                    coolingUpgrade: 0,
+                    securityUpgrade: 0,
+                    stakedTokens: 0
+                });
+
+                elements.eventsLog.innerHTML = `
+                    <div class="event success">[系统] 游戏已重置! 开始新的旅程。</div>
+                    <div class="event">[信息] 节点已重新启动...</div>
+                `;
+
+                updateUI();
+                createNetworkNodes();
+            }
+        }
+
+        // 显示帮助
+        function showHelp() {
+            alert(`
+Nexus Explorer 游戏指南：
+Nexus Explorer Game Guide:
+
+目标：建立强大的区块链节点，赚取代币，提升网络影响力。
+Goal: Build a powerful blockchain node, earn tokens, and increase network influence.
+
+核心机制：
+1. 挖矿 (⛏️) - 消耗能源获得代币
+2. 验证交易 (✅) - 低风险获得代币
+3. 质押代币 (🔒) - 提高节点可靠性
+4. 防御攻击 (🛡️) - 保护节点安全
+5. 连接节点 (🌐) - 扩展网络并提升等级
+Core Mechanics:
+1. Mining (⛏️) - Consume energy to get tokens
+2. Verify transactions (✅) - Get tokens with low risk
+3. Stake tokens (🔒) - Improve node reliability
+4. Defend against attacks (🛡️) - Protect node security
+5. Connect nodes (🌐) - Expand the network and upgrade levels
+
+升级节点：
+- GPU加速器：提升算力
+- 冷却系统：降低能源消耗
+- 安全协议：提高可靠性
+Upgrade nodes:
+- GPU accelerator: Increase computing power
+- Cooling system: Reduce energy consumption
+- Security protocol: Improve reliability
+
+提示：
+- 经常保存游戏进度
+- 保持高可靠性以避免攻击
+- 质押代币可获得被动收入
+Tips:
+- Save game progress frequently
+- Maintain high reliability to avoid attacks
+- Stake tokens for passive income
+            `);
+        }
+
+        // 加载保存的游戏
+        function loadSavedGame() {
+            const savedGame = localStorage.getItem('nexusExplorerSave');
+            if (savedGame) {
+                try {
+                    const savedState = JSON.parse(savedGame);
+                    Object.assign(gameState, savedState);
+                    addEvent("[系统] 游戏进度已加载!", "success");
+                } catch (e) {
+                    console.error("加载游戏失败:", e);
+                    addEvent("[系统] 加载游戏失败，开始新游戏", "warning");
+                }
+            }
+        }
+
+        // 启动游戏
+        window.addEventListener('load', () => {
+            loadSavedGame();
+            initGame();
+        });
+    </script>
+</body>
+</html>
